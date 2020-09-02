@@ -7,9 +7,10 @@
     <style type="text/css">
       div.bar {
         display: inline-block;
-        width: 20px;
+        width: 33px;
         height: 75px;
-        background-color: teal;
+        margin-right: 11px;
+        background-color: rgb(202, 57, 0);
       }
     </style>
   </head>
@@ -24,10 +25,9 @@
         .append("div")
         .attr("class", "bar")
         .style("height", function (d) {
-          return d + "px";
+          var barheight = d * 10;
+          return barheight + "px";
         });
-
-      // Your beautiful D3 code will go here
     </script>
   </body>
 </html>
