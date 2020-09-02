@@ -17,7 +17,13 @@
         .text(function (d) {
           return "I'm learning D3 " + d;
         })
-        .style("color", "red");
+        .style("color", function (d) {
+          if (d > 15) {
+            return "red";
+          } else {
+            return "blue";
+          }
+        });
 
       // Your beautiful D3 code will go here
     </script>
