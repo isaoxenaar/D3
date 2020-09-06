@@ -11,7 +11,7 @@
       var dataset = [25, 7, 5, 26, 11, 13, 54, 23, 89];
       var w = 500;
       var h = 100;
-      var barPadding = 1;
+      var barPadding = 5;
 
       var svg = d3
         .select("body")
@@ -27,9 +27,16 @@
         .attr("x", function (d, i) {
           return i * (w / dataset.length);
         })
-        .attr("y", 0)
+        .attr("y", function (d) {
+          return h - d;
+        })
         .attr("width", w / dataset.length - barPadding)
-        .attr("height", 100);
+        .attr("height", function (d) {
+          return d;
+        })
+        .attr("fill", function (d) {
+          return "rgb(0, " + Math.round(d * 23) + ", 0)";
+        });
     </script>
   </body>
 </html>
