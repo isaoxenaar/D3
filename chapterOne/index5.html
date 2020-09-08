@@ -10,6 +10,7 @@
     <script type="text/javascript">
       var h = 100;
       var w = 500;
+      var padding = 20;
 
       var dataset = [
         [33, 33],
@@ -36,7 +37,7 @@
             return d[0];
           }),
         ])
-        .range([0, w]);
+        .range([padding, w - padding]);
 
       var yScale = d3
         .scaleLinear()
@@ -46,7 +47,7 @@
             return d[1];
           }),
         ])
-        .range([0, h]);
+        .range([h - padding, padding]);
 
       svg
         .selectAll("circle")
@@ -80,7 +81,7 @@
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
-        .attr("fill", "green");
+        .attr("fill", "violet");
     </script>
   </body>
 </html>
