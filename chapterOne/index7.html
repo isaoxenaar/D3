@@ -2,51 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>D3 Page Template</title>
-    <script type="text/javascript" src="d3.js"></script>
-    <style type="text/css"></style>
+    <title>
+      D3: Scaled scatterplot, using a square root scale for circle areas
+    </title>
+    <script type="text/javascript" src="../d3.js"></script>
+    <style type="text/css">
+      /* No style rules here yet */
+    </style>
   </head>
   <body>
     <script type="text/javascript">
-      var h = 500;
-      var w = 750;
+      //Width and height
+      var w = 500;
+      var h = 300;
       var padding = 20;
 
       var dataset = [
-        [33, 33],
-        [222, 99],
-        [333, 66],
-        [111, 11],
-        [444, 99],
-        [480, 33],
-        [444, 66],
-        [66, 11],
+        [5, 20],
+        [480, 90],
+        [250, 50],
+        [100, 33],
+        [330, 95],
+        [410, 12],
+        [475, 44],
+        [25, 67],
+        [85, 21],
+        [220, 88],
         [600, 150],
       ];
 
-      var svg = d3
-        .select("body")
-        .append("svg")
-        .attr("width", w)
-        .attr("height", h);
-
-      var rowConverter = function (d) {
-        return {
-          Date: parseTime(d.Date),
-          Amount: parseInt(d.Amount),
-        };
-      };
-
-      var aScale = d3
-        .scaleSqrt()
-        .domain([
-          0,
-          d3.max(dataset, function (d) {
-            return d[1];
-          }),
-        ])
-        .range([5, 15]);
-
+      //Create scale functions
       var xScale = d3
         .scaleLinear()
         .domain([
@@ -67,6 +52,24 @@
         ])
         .range([h - padding, padding]);
 
+      var aScale = d3
+        .scaleSqrt()
+        .domain([
+          0,
+          d3.max(dataset, function (d) {
+            return d[1];
+          }),
+        ])
+        .range([0, 10]);
+
+      //Create SVG element
+      var svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+      //Create circles
       svg
         .selectAll("circle")
         .data(dataset)
@@ -80,9 +83,9 @@
         })
         .attr("r", function (d) {
           return aScale(d[1]);
-        })
-        .attr("fill", "pink");
+        });
 
+      //Create labels
       svg
         .selectAll("text")
         .data(dataset)
@@ -99,7 +102,7 @@
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
-        .attr("fill", "violet");
+        .attr("fill", "red");
     </script>
   </body>
 </html>
