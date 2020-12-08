@@ -1,102 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>D3: Line chart with axes</title>
-		<script type="text/javascript" src="../d3.js"></script>
-		<style type="text/css">
+  <head>
+    <meta charset="utf-8" />
+    <title>D3: Line chart with axes</title>
+    <script type="text/javascript" src="../d3.js"></script>
+    <style type="text/css">
+      .line {
+        fill: none;
+        stroke: teal;
+        stroke-width: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      //Width and height
+      var w = 800;
+      var h = 300;
+      var padding = 40;
 
-			.line {
-				fill: none;
-				stroke: teal;
-				stroke-width: 0.5;
-			}
+      var dataset, xScale, yScale, xAxis, yAxis, line; //Empty, for now
 
-		</style>
-	</head>
-	<body>
-		<script type="text/javascript">
+      //For converting Dates to strings
+      var formatTime = d3.timeFormat("%Y");
 
-			//Width and height
-			var w = 800;
-			var h = 300;
-			var padding = 40;
-			
-			var dataset, xScale, yScale, xAxis, yAxis, line;  //Empty, for now
+      //Function for converting CSV values from strings to Dates and numbers
+      var rowConverter = function (d) {
+        return {
+          date: new Date(+d.year, +d.month - 1), //Make a new Date object for each year + month
+          average: parseFloat(d.average), //Convert from string to float
+        };
+      };
 
-			//For converting Dates to strings
-			var formatTime = d3.timeFormat("%Y");
+      //Load in data
+      d3.csv("results.csv", rowConverter, function (data) {
+        var dataset = data;
 
-			//Function for converting CSV values from strings to Dates and numbers
-			var rowConverter = function(d) {
-				return {
-					date: new Date(+d.year, (+d.month - 1)),  //Make a new Date object for each year + month
-					average: parseFloat(d.average)  //Convert from string to float
-				};
-			}
+        //Print data to console as table, for verification
+        //console.table(dataset, ["date", "average"]);
 
-			//Load in data
-			d3.csv("mauna_loa_co2_monthly_averages.csv", rowConverter, function(data) {
+        //Create scale functions
+        xScale = d3
+          .scaleTime()
+          .domain([
+            d3.min(dataset, function (d) {
+              return d.date;
+            }),
+            d3.max(dataset, function (d) {
+              return d.date;
+            }),
+          ])
+          .range([padding, w]);
 
-				var dataset = data;
+        yScale = d3
+          .scaleLinear()
+          .domain([
+            0,
+            d3.max(dataset, function (d) {
+              return d.average;
+            }),
+          ])
+          .range([h - padding, 0]);
 
-				//Print data to console as table, for verification
-				//console.table(dataset, ["date", "average"]);
+        //Define axes
+        xAxis = d3.axisBottom().scale(xScale).ticks(10).tickFormat(formatTime);
 
-				//Create scale functions
-				xScale = d3.scaleTime()
-							   .domain([
-									d3.min(dataset, function(d) { return d.date; }),
-									d3.max(dataset, function(d) { return d.date; })
-								])
-							   .range([padding, w]);
+        //Define Y axis
+        yAxis = d3.axisLeft().scale(yScale).ticks(10);
 
-				yScale = d3.scaleLinear()
-								.domain([0, d3.max(dataset, function(d) { return d.average; })])
-								.range([h - padding, 0]);
+        //Define line generator
+        line = d3
+          .line()
+          .x(function (d) {
+            return xScale(d.date);
+          })
+          .y(function (d) {
+            return yScale(d.average);
+          });
 
-				//Define axes
-				xAxis = d3.axisBottom()
-						   .scale(xScale)
-						   .ticks(10)
-						   .tickFormat(formatTime);
+        //Create SVG element
+        var svg = d3
+          .select("body")
+          .append("svg")
+          .attr("width", w)
+          .attr("height", h);
 
-				//Define Y axis
-				yAxis = d3.axisLeft()
-						   .scale(yScale)
-						   .ticks(10);
+        //Create line
+        svg.append("path").datum(dataset).attr("class", "line").attr("d", line);
 
-				//Define line generator
-				line = d3.line()
-							.x(function(d) { return xScale(d.date); })
-							.y(function(d) { return yScale(d.average); });
-				
-				//Create SVG element
-				var svg = d3.select("body")
-							.append("svg")
-							.attr("width", w)
-							.attr("height", h);
+        //Create axes
+        svg
+          .append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(0," + (h - padding) + ")")
+          .call(xAxis);
 
-				//Create line
-				svg.append("path")
-					.datum(dataset)
-					.attr("class", "line")
-					.attr("d", line);
-
-				//Create axes
-				svg.append("g")
-					.attr("class", "axis")
-					.attr("transform", "translate(0," + (h - padding) + ")")
-					.call(xAxis);
-
-				svg.append("g")
-					.attr("class", "axis")
-					.attr("transform", "translate(" + padding + ",0)")
-					.call(yAxis);
-
-
-			});
-			
-		</script>
-	</body>
+        svg
+          .append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(" + padding + ",0)")
+          .call(yAxis);
+      });
+    </script>
+  </body>
 </html>
